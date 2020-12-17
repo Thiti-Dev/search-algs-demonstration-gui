@@ -3,6 +3,93 @@ from tkinter import *
 import threading
 import config as config
 
+# ─── CALLBACK FUNCS ─────────────────────────────────────────────────────────────
+class Stimulator:
+    currentStimulation = None
+    tick_timer = None
+    tick_interval = 1.0
+
+
+    #DFS#
+    operation_list = [] # a list contains set of lambda
+    operation_list_info = []
+    current_operator_cnt = 0 # use for fixing the bugged if the array is popped while doing the iteration
+    orderize_string = ""
+    # ────────────────────────────────────────────────────────────────────────────────
+
+    @staticmethod
+    def start(name):
+        print("Starting stimulator with type of %s" % (name))
+        Stimulator.currentStimulation = name
+
+        #start the thread time
+        if name == "DFS":
+            #this only runs once the button has been clicked
+            Stimulator.tick_timer = threading.Timer(Stimulator.tick_interval, Stimulator.tick_invoke)
+
+            # All of the DFS logics are below here and all of it will be appening in the operation_list
+            def dfs(_visited,graph,node):
+                if node not in _visited:
+                    print(node)
+                    _visited.add(node) # mark node as visited
+                    if "Next" in graph[node]: # If having node that can transverse to
+                        for neighbour in graph[node]["Next"]:
+                            #DfsPage.rootCanvas.itemconfig(graph[node]["Next"][neighbour]["Line"], fill='red')
+                            Stimulator.operation_list.append(lambda : (
+                                DfsPage.rootCanvas.itemconfig(graph[node]["Next"][neighbour]["Line"], fill='red'),
+                                print(f'Invoke from {node} to {neighbour}')
+                            ))
+                            Stimulator.operation_list_info.append((node,neighbour))
+                            dfs(visited, graph, neighbour)
+
+            visited = set()
+            dfs(visited,DfsPage.relatedNodeElementsMapping,'A')
+            Stimulator.orderize_string='A -> '
+            print("Length of operation %d" %(len(Stimulator.operation_list)))
+            print(Stimulator.operation_list_info)
+            # ─────────────────────────────────────────────────────────────────
+
+            
+        Stimulator.tick_timer.start()
+    @staticmethod
+    def tick_invoke():
+        Stimulator.tick_timer = threading.Timer(Stimulator.tick_interval, Stimulator.tick_invoke)
+        Stimulator.tick_timer.start() # made continuoys
+        if Stimulator.currentStimulation == "DFS":
+            Stimulator.dfs_tick()
+    @staticmethod
+    def dfs_tick():
+        print("Tick runs here")
+
+        # This methods is bugged
+        # if len(Stimulator.operation_list): #if there is the process remain
+        #     #Stimulator.operation_list[0]() # run the lambda exp from the list >Currently Bugged<
+        #     print(Stimulator.operation_list_info)
+        #     if Stimulator.operation_list_info[0]:
+
+        #         fromNode,toNode = Stimulator.operation_list_info[0]
+        #         DfsPage.rootCanvas.itemconfig(DfsPage.relatedNodeElementsMapping[fromNode]["Next"][toNode]["Line"], fill='red')
+        #         #Stimulator.operation_list.pop(0) # popped after >Currently bugged<
+        #         Stimulator.operation_list_info.pop(0) # popped after
+        # else:
+        #     print("Finish stimulation operation")
+
+        if len(Stimulator.operation_list) > Stimulator.current_operator_cnt:
+            fromNode,toNode = Stimulator.operation_list_info[Stimulator.current_operator_cnt]
+            DfsPage.rootCanvas.itemconfig(DfsPage.relatedNodeElementsMapping[fromNode]["Next"][toNode]["Line"], fill='red')
+            Stimulator.current_operator_cnt=Stimulator.current_operator_cnt+1
+
+            if Stimulator.current_operator_cnt == len(Stimulator.operation_list):
+                Stimulator.orderize_string=Stimulator.orderize_string+toNode
+            else:
+                Stimulator.orderize_string=Stimulator.orderize_string+toNode + ' -> '
+            result_label.config(text=Stimulator.orderize_string)
+        else:
+             print("Finish stimulation operation")
+
+# ────────────────────────────────────────────────────────────────────────────────
+
+
 class MenuPage(tk.Frame):
     pagePointer = "Menu"
     def __init__(self, parent, controller):
@@ -37,6 +124,7 @@ class BfsPage(tk.Frame):
         # ─────────────────────────────────────────────────────────────────
 
 class DfsPage(tk.Frame):
+    rootCanvas = None
     pagePointer = "Dfs"
     relatedNodeElementsMapping =  {
         "A": {
@@ -62,49 +150,74 @@ class DfsPage(tk.Frame):
     }
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
+
+        exit_btn = tk.Button(self,command=lambda: controller.show_frame(MenuPage), text="Home",bg="gray",fg="blue2",activebackground="red",font=('times', 15, ' bold '))
+        exit_btn.place(x=600,y=450,anchor="center")
         
-        greeting = tk.Label(self,text="Depth first search visualization page goes here")
-        greeting.pack()
+        greeting = tk.Label(self,text="Stimulation Panel")
+        greeting.place(x=370,y=20)
 
-        #ELEMENT CREATION
-        self.rootCanvas = Canvas(self,width=640,height=480)
-        self.rootCanvas.pack()
-        self.relatedNodeElementsMapping["A"]["Oval"] = self.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
-            fill="white", width=2)
-        self.rootCanvas.move(self.relatedNodeElementsMapping["A"]["Oval"], 220,100)
-        self.relatedNodeElementsMapping["A"]["Label"] = self.rootCanvas.create_text(220+35,100+35,text="A") # Add 35 to fix the position
-        self.relatedNodeElementsMapping["A"]["Next"]["B"]["Line"] = self.rootCanvas.create_line(220+25, 100+55, 225, 200, arrow=tk.LAST)
-        self.relatedNodeElementsMapping["A"]["Next"]["C"]["Line"] = self.rootCanvas.create_line(230+25, 100+55, 290, 200, arrow=tk.LAST)
-        self.relatedNodeElementsMapping["A"]["Next"]["D"]["Line"] = self.rootCanvas.create_line(240+25, 100+55, 290+65, 200, arrow=tk.LAST)
+        sim_start_btn = tk.Button(self,command=lambda: Stimulator.start("DFS"), text="Start",bg="orange",fg="white",activebackground="gray",font=('times', 8, ' bold '))
+        sim_start_btn.place(x=300,y=80,anchor="center",width=60)
 
-        self.relatedNodeElementsMapping["B"]["Oval"] = self.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
-            fill="white", width=2)
-        self.rootCanvas.move(self.relatedNodeElementsMapping["B"]["Oval"], 180,100+85)
-        self.relatedNodeElementsMapping["B"]["Label"] = self.rootCanvas.create_text(180+35,100+85+35,text="B") # Add 35 to fix the position
+        sim_start_label = tk.Label(self,text="To start the search algorithm")
+        sim_start_label.place(x=350,y=70)
 
-        self.relatedNodeElementsMapping["C"]["Oval"] = self.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
-            fill="white", width=2)
-        self.rootCanvas.move(self.relatedNodeElementsMapping["C"]["Oval"], 260,100+85)
-        self.relatedNodeElementsMapping["C"]["Label"] = self.rootCanvas.create_text(260+35,100+85+35,text="C") # Add 35 to fix the position
-        self.relatedNodeElementsMapping["C"]["Next"]["E"]["Line"] = self.rootCanvas.create_line(260+25, 180+55, 260 , 265, arrow=tk.LAST)
+        result_label_info = tk.Label(self,text="Visited node in order:")
+        result_label_info.place(x=220,y=220)
 
-        self.relatedNodeElementsMapping["D"]["Oval"] = self.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
-            fill="white", width=2)
-        self.rootCanvas.move(self.relatedNodeElementsMapping["D"]["Oval"], 340,100+85)
-        self.relatedNodeElementsMapping["D"]["Label"] = self.rootCanvas.create_text(340+35,100+85+35,text="D") # Add 35 to fix the position
-        self.relatedNodeElementsMapping["D"]["Next"]["F"]["Line"] = self.rootCanvas.create_line(340+25, 180+55, 340 , 265, arrow=tk.LAST)
+        global result_label
+        result_label = tk.Label(self,text="")
+        result_label.place(x=220,y=270)
 
-        self.relatedNodeElementsMapping["E"]["Oval"] = self.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+        #ELEMENT CREATION -> CANVAS
+        DfsPage.rootCanvas = Canvas(self,width=400,height=480,bg="gray")
+        DfsPage.rootCanvas.place(x=-200,y=0)
+        self.relatedNodeElementsMapping["A"]["Oval"] = DfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
             fill="white", width=2)
-        self.rootCanvas.move(self.relatedNodeElementsMapping["E"]["Oval"], 220,160+85)
-        self.relatedNodeElementsMapping["E"]["Label"] = self.rootCanvas.create_text(220+35,160+85+35,text="E") # Add 35 to fix the position
+        DfsPage.rootCanvas.move(self.relatedNodeElementsMapping["A"]["Oval"], 220,100)
+        self.relatedNodeElementsMapping["A"]["Label"] = DfsPage.rootCanvas.create_text(220+35,100+35,text="A") # Add 35 to fix the position
+        self.relatedNodeElementsMapping["A"]["Next"]["B"]["Line"] = DfsPage.rootCanvas.create_line(220+25, 100+55, 225, 200, arrow=tk.LAST)
+        self.relatedNodeElementsMapping["A"]["Next"]["C"]["Line"] = DfsPage.rootCanvas.create_line(230+25, 100+55, 290, 200, arrow=tk.LAST)
+        self.relatedNodeElementsMapping["A"]["Next"]["D"]["Line"] = DfsPage.rootCanvas.create_line(240+25, 100+55, 290+65, 200, arrow=tk.LAST)
 
-        self.relatedNodeElementsMapping["F"]["Oval"] = self.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+        self.relatedNodeElementsMapping["B"]["Oval"] = DfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
             fill="white", width=2)
-        self.rootCanvas.move(self.relatedNodeElementsMapping["F"]["Oval"], 300,160+85)
-        self.relatedNodeElementsMapping["F"]["Label"] = self.rootCanvas.create_text(300+35,160+85+35,text="F") # Add 35 to fix the position
+        DfsPage.rootCanvas.move(self.relatedNodeElementsMapping["B"]["Oval"], 180,100+85)
+        self.relatedNodeElementsMapping["B"]["Label"] = DfsPage.rootCanvas.create_text(180+35,100+85+35,text="B") # Add 35 to fix the position
+
+        self.relatedNodeElementsMapping["C"]["Oval"] = DfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        DfsPage.rootCanvas.move(self.relatedNodeElementsMapping["C"]["Oval"], 260,100+85)
+        self.relatedNodeElementsMapping["C"]["Label"] = DfsPage.rootCanvas.create_text(260+35,100+85+35,text="C") # Add 35 to fix the position
+        self.relatedNodeElementsMapping["C"]["Next"]["E"]["Line"] = DfsPage.rootCanvas.create_line(260+25, 180+55, 260 , 265, arrow=tk.LAST)
+
+        self.relatedNodeElementsMapping["D"]["Oval"] = DfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        DfsPage.rootCanvas.move(self.relatedNodeElementsMapping["D"]["Oval"], 340,100+85)
+        self.relatedNodeElementsMapping["D"]["Label"] = DfsPage.rootCanvas.create_text(340+35,100+85+35,text="D") # Add 35 to fix the position
+        self.relatedNodeElementsMapping["D"]["Next"]["F"]["Line"] = DfsPage.rootCanvas.create_line(340+25, 180+55, 340 , 265, arrow=tk.LAST)
+
+        self.relatedNodeElementsMapping["E"]["Oval"] = DfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        DfsPage.rootCanvas.move(self.relatedNodeElementsMapping["E"]["Oval"], 220,160+85)
+        self.relatedNodeElementsMapping["E"]["Label"] = DfsPage.rootCanvas.create_text(220+35,160+85+35,text="E") # Add 35 to fix the position
+
+        self.relatedNodeElementsMapping["F"]["Oval"] = DfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        DfsPage.rootCanvas.move(self.relatedNodeElementsMapping["F"]["Oval"], 300,160+85)
+        self.relatedNodeElementsMapping["F"]["Label"] = DfsPage.rootCanvas.create_text(300+35,160+85+35,text="F") # Add 35 to fix the position
         #canvas.update()
         # ─────────────────────────────────────────────────────────────────
+
+
+    #Deprecated -> unused
+    def createPanelWindow(self):
+        self.panel = tk.Tk()
+        self.panel.title("Panel")
+        self.panel.geometry('200x200')
+        self.panel.configure(background='snow')
+        self.panel.mainloop()
 
 class DijkstraPage(tk.Frame):
     pagePointer = "Dijkstra"
@@ -146,6 +259,10 @@ class FrameController(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
         FrameController.currentPage = self.frames[cont].pagePointer
+        
+        if FrameController.currentPage == "Dfs":
+            print("Nothing")
+            #self.frames[cont].createPanelWindow()
 # ────────────────────────────────────────────────────────────────────────────────
 
 
@@ -174,7 +291,7 @@ def tick():
     global tickTimer
     tickTimer = threading.Timer(1.0, tick)
     tickTimer.start()
-    print("Ticking %s" % (FrameController.currentPage))
+    print("Current viewing frame page :  %s" % (FrameController.currentPage))
 # ────────────────────────────────────────────────────────────────────────────────
 
 
@@ -185,3 +302,4 @@ tick()
 app.mainloop()
 
 tickTimer.cancel()#defer
+Stimulator.tick_timer.cancel()#defer
