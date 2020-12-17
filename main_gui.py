@@ -1,8 +1,10 @@
 import tkinter as tk
 from tkinter import *
+import threading
 import config as config
 
 class MenuPage(tk.Frame):
+    pagePointer = "Menu"
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         
@@ -23,6 +25,7 @@ class MenuPage(tk.Frame):
         exit_btn.place(x=600,y=450,anchor="center")
 
 class BfsPage(tk.Frame):
+    pagePointer = "Bfs"
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         
@@ -34,17 +37,77 @@ class BfsPage(tk.Frame):
         # ─────────────────────────────────────────────────────────────────
 
 class DfsPage(tk.Frame):
+    pagePointer = "Dfs"
+    relatedNodeElementsMapping =  {
+        "A": {
+            "Next": {
+                "B": {},
+                "C": {},
+                "D": {}
+            }
+        },
+        "B": {},
+        "C": {
+            "Next":{
+                "E":{}
+            }
+        },
+        "D": {
+            "Next":{
+                "F":{}
+            }
+        },
+        "E": {},
+        "F": {}
+    }
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         
         greeting = tk.Label(self,text="Depth first search visualization page goes here")
         greeting.pack()
 
-        #Logic will be belonging here
+        #ELEMENT CREATION
+        self.rootCanvas = Canvas(self,width=640,height=480)
+        self.rootCanvas.pack()
+        self.relatedNodeElementsMapping["A"]["Oval"] = self.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        self.rootCanvas.move(self.relatedNodeElementsMapping["A"]["Oval"], 220,100)
+        self.relatedNodeElementsMapping["A"]["Label"] = self.rootCanvas.create_text(220+35,100+35,text="A") # Add 35 to fix the position
+        self.relatedNodeElementsMapping["A"]["Next"]["B"]["Line"] = self.rootCanvas.create_line(220+25, 100+55, 225, 200, arrow=tk.LAST)
+        self.relatedNodeElementsMapping["A"]["Next"]["C"]["Line"] = self.rootCanvas.create_line(230+25, 100+55, 290, 200, arrow=tk.LAST)
+        self.relatedNodeElementsMapping["A"]["Next"]["D"]["Line"] = self.rootCanvas.create_line(240+25, 100+55, 290+65, 200, arrow=tk.LAST)
 
+        self.relatedNodeElementsMapping["B"]["Oval"] = self.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        self.rootCanvas.move(self.relatedNodeElementsMapping["B"]["Oval"], 180,100+85)
+        self.relatedNodeElementsMapping["B"]["Label"] = self.rootCanvas.create_text(180+35,100+85+35,text="B") # Add 35 to fix the position
+
+        self.relatedNodeElementsMapping["C"]["Oval"] = self.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        self.rootCanvas.move(self.relatedNodeElementsMapping["C"]["Oval"], 260,100+85)
+        self.relatedNodeElementsMapping["C"]["Label"] = self.rootCanvas.create_text(260+35,100+85+35,text="C") # Add 35 to fix the position
+        self.relatedNodeElementsMapping["C"]["Next"]["E"]["Line"] = self.rootCanvas.create_line(260+25, 180+55, 260 , 265, arrow=tk.LAST)
+
+        self.relatedNodeElementsMapping["D"]["Oval"] = self.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        self.rootCanvas.move(self.relatedNodeElementsMapping["D"]["Oval"], 340,100+85)
+        self.relatedNodeElementsMapping["D"]["Label"] = self.rootCanvas.create_text(340+35,100+85+35,text="D") # Add 35 to fix the position
+        self.relatedNodeElementsMapping["D"]["Next"]["F"]["Line"] = self.rootCanvas.create_line(340+25, 180+55, 340 , 265, arrow=tk.LAST)
+
+        self.relatedNodeElementsMapping["E"]["Oval"] = self.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        self.rootCanvas.move(self.relatedNodeElementsMapping["E"]["Oval"], 220,160+85)
+        self.relatedNodeElementsMapping["E"]["Label"] = self.rootCanvas.create_text(220+35,160+85+35,text="E") # Add 35 to fix the position
+
+        self.relatedNodeElementsMapping["F"]["Oval"] = self.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        self.rootCanvas.move(self.relatedNodeElementsMapping["F"]["Oval"], 300,160+85)
+        self.relatedNodeElementsMapping["F"]["Label"] = self.rootCanvas.create_text(300+35,160+85+35,text="F") # Add 35 to fix the position
+        #canvas.update()
         # ─────────────────────────────────────────────────────────────────
 
 class DijkstraPage(tk.Frame):
+    pagePointer = "Dijkstra"
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         
@@ -57,6 +120,7 @@ class DijkstraPage(tk.Frame):
 
 # ─── CONTROLLER ─────────────────────────────────────────────────────────────────
 class FrameController(tk.Tk):
+    currentPage = NONE
     def __init__(self, *args, **kwargs):
         
         tk.Tk.__init__(self, *args, **kwargs)
@@ -81,6 +145,7 @@ class FrameController(tk.Tk):
 
         frame = self.frames[cont]
         frame.tkraise()
+        FrameController.currentPage = self.frames[cont].pagePointer
 # ────────────────────────────────────────────────────────────────────────────────
 
 
@@ -98,10 +163,25 @@ def getCenteredAxis():
 
 # ─── INTERACTIONS CALLBACK ──────────────────────────────────────────────────────
 def exitProgram():
-     app.destroy()
+    app.destroy()
+    tickTimer.cancel()
+
+     
 # ────────────────────────────────────────────────────────────────────────────────
+
+#Interval checker&logic driven
+def tick():
+    global tickTimer
+    tickTimer = threading.Timer(1.0, tick)
+    tickTimer.start()
+    print("Ticking %s" % (FrameController.currentPage))
+# ────────────────────────────────────────────────────────────────────────────────
+
 
 global app
 app = FrameController()
 app.title("Search Algorithm Demonstration GUI-APPLICATION")
+tick()
 app.mainloop()
+
+tickTimer.cancel()#defer
