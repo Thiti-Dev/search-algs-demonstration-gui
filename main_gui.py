@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import *
 import threading
 import config as config
+from PIL import Image, ImageTk
 
 # ─── CALLBACK FUNCS ─────────────────────────────────────────────────────────────
 class Stimulator:
@@ -163,6 +164,12 @@ class DfsPage(tk.Frame):
         sim_start_label = tk.Label(self,text="To start the search algorithm")
         sim_start_label.place(x=350,y=70)
 
+        code_peek_btn = tk.Button(self,command=lambda: codeViewing("DFS"), text="Code",bg="orange2",fg="white",activebackground="gray",font=('times', 8, ' bold '))
+        code_peek_btn.place(x=300,y=120,anchor="center",width=60)
+
+        code_peek_btn_label = tk.Label(self,text="To see how this algorithm written in python")
+        code_peek_btn_label.place(x=350,y=110)
+
         result_label_info = tk.Label(self,text="Visited node in order:")
         result_label_info.place(x=220,y=220)
 
@@ -283,7 +290,21 @@ def exitProgram():
     app.destroy()
     tickTimer.cancel()
 
-     
+
+def codeViewing(algs_name):
+    if algs_name == "DFS":
+        code_window = tk.Tk()
+        code_window.title("Depth first search in python")
+        code_window.geometry('533x411')
+        code_window.configure(background='snow')
+
+        load = Image.open("dfs_code.PNG")
+        render = ImageTk.PhotoImage(load,master=code_window)
+        img = Label(code_window, image=render)
+        img.image = render
+        img.place(x=0, y=0)
+        
+        code_window.mainloop()
 # ────────────────────────────────────────────────────────────────────────────────
 
 #Interval checker&logic driven
