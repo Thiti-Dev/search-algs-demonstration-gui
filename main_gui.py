@@ -295,10 +295,11 @@ def codeViewing(algs_name):
     if algs_name == "DFS":
         code_window = tk.Tk()
         code_window.title("Depth first search in python")
-        code_window.geometry('533x411')
+        #code_window.geometry('533x411')
         code_window.configure(background='snow')
 
         load = Image.open("dfs_code.PNG")
+        code_window.geometry(f'{load.size[0]}x{load.size[1]}')
         render = ImageTk.PhotoImage(load,master=code_window)
         img = Label(code_window, image=render)
         img.image = render
