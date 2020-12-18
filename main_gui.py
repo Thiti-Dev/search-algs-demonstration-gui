@@ -170,40 +170,40 @@ class BfsPage(tk.Frame):
 
         BfsPage.rootCanvas = Canvas(self,width=400,height=480,bg="gray")
         BfsPage.rootCanvas.place(x=-200,y=0)
-        self.relatedNodeElementsMapping["A"]["Oval"] = BfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+        BfsPage.relatedNodeElementsMapping["A"]["Oval"] = BfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
             fill="white", width=2)
-        BfsPage.rootCanvas.move(self.relatedNodeElementsMapping["A"]["Oval"], 220,100)
-        self.relatedNodeElementsMapping["A"]["Label"] = BfsPage.rootCanvas.create_text(220+35,100+35,text="A") # Add 35 to fix the position
-        self.relatedNodeElementsMapping["A"]["Next"]["B"]["Line"] = BfsPage.rootCanvas.create_line(220+25, 100+55, 225, 200, arrow=tk.LAST)
-        self.relatedNodeElementsMapping["A"]["Next"]["C"]["Line"] = BfsPage.rootCanvas.create_line(230+25, 100+55, 290, 200, arrow=tk.LAST)
-        self.relatedNodeElementsMapping["A"]["Next"]["D"]["Line"] = BfsPage.rootCanvas.create_line(240+25, 100+55, 290+65, 200, arrow=tk.LAST)
+        BfsPage.rootCanvas.move(BfsPage.relatedNodeElementsMapping["A"]["Oval"], 220,100)
+        BfsPage.relatedNodeElementsMapping["A"]["Label"] = BfsPage.rootCanvas.create_text(220+35,100+35,text="A") # Add 35 to fix the position
+        BfsPage.relatedNodeElementsMapping["A"]["Next"]["B"]["Line"] = BfsPage.rootCanvas.create_line(220+25, 100+55, 225, 200, arrow=tk.LAST)
+        BfsPage.relatedNodeElementsMapping["A"]["Next"]["C"]["Line"] = BfsPage.rootCanvas.create_line(230+25, 100+55, 290, 200, arrow=tk.LAST)
+        BfsPage.relatedNodeElementsMapping["A"]["Next"]["D"]["Line"] = BfsPage.rootCanvas.create_line(240+25, 100+55, 290+65, 200, arrow=tk.LAST)
 
-        self.relatedNodeElementsMapping["B"]["Oval"] = BfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+        BfsPage.relatedNodeElementsMapping["B"]["Oval"] = BfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
             fill="white", width=2)
-        BfsPage.rootCanvas.move(self.relatedNodeElementsMapping["B"]["Oval"], 180,100+85)
-        self.relatedNodeElementsMapping["B"]["Label"] = BfsPage.rootCanvas.create_text(180+35,100+85+35,text="B") # Add 35 to fix the position
+        BfsPage.rootCanvas.move(BfsPage.relatedNodeElementsMapping["B"]["Oval"], 180,100+85)
+        BfsPage.relatedNodeElementsMapping["B"]["Label"] = BfsPage.rootCanvas.create_text(180+35,100+85+35,text="B") # Add 35 to fix the position
 
-        self.relatedNodeElementsMapping["C"]["Oval"] = BfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+        BfsPage.relatedNodeElementsMapping["C"]["Oval"] = BfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
             fill="white", width=2)
-        BfsPage.rootCanvas.move(self.relatedNodeElementsMapping["C"]["Oval"], 260,100+85)
-        self.relatedNodeElementsMapping["C"]["Label"] = BfsPage.rootCanvas.create_text(260+35,100+85+35,text="C") # Add 35 to fix the position
-        self.relatedNodeElementsMapping["C"]["Next"]["E"]["Line"] = BfsPage.rootCanvas.create_line(260+25, 180+55, 260 , 265, arrow=tk.LAST)
+        BfsPage.rootCanvas.move(BfsPage.relatedNodeElementsMapping["C"]["Oval"], 260,100+85)
+        BfsPage.relatedNodeElementsMapping["C"]["Label"] = BfsPage.rootCanvas.create_text(260+35,100+85+35,text="C") # Add 35 to fix the position
+        BfsPage.relatedNodeElementsMapping["C"]["Next"]["E"]["Line"] = BfsPage.rootCanvas.create_line(260+25, 180+55, 260 , 265, arrow=tk.LAST)
 
-        self.relatedNodeElementsMapping["D"]["Oval"] = BfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+        BfsPage.relatedNodeElementsMapping["D"]["Oval"] = BfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
             fill="white", width=2)
-        BfsPage.rootCanvas.move(self.relatedNodeElementsMapping["D"]["Oval"], 340,100+85)
-        self.relatedNodeElementsMapping["D"]["Label"] = BfsPage.rootCanvas.create_text(340+35,100+85+35,text="D") # Add 35 to fix the position
-        self.relatedNodeElementsMapping["D"]["Next"]["F"]["Line"] = BfsPage.rootCanvas.create_line(340+25, 180+55, 340 , 265, arrow=tk.LAST)
+        BfsPage.rootCanvas.move(BfsPage.relatedNodeElementsMapping["D"]["Oval"], 340,100+85)
+        BfsPage.relatedNodeElementsMapping["D"]["Label"] = BfsPage.rootCanvas.create_text(340+35,100+85+35,text="D") # Add 35 to fix the position
+        BfsPage.relatedNodeElementsMapping["D"]["Next"]["F"]["Line"] = BfsPage.rootCanvas.create_line(340+25, 180+55, 340 , 265, arrow=tk.LAST)
 
-        self.relatedNodeElementsMapping["E"]["Oval"] = BfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+        BfsPage.relatedNodeElementsMapping["E"]["Oval"] = BfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
             fill="white", width=2)
-        BfsPage.rootCanvas.move(self.relatedNodeElementsMapping["E"]["Oval"], 220,160+85)
-        self.relatedNodeElementsMapping["E"]["Label"] = BfsPage.rootCanvas.create_text(220+35,160+85+35,text="E") # Add 35 to fix the position
+        BfsPage.rootCanvas.move(BfsPage.relatedNodeElementsMapping["E"]["Oval"], 220,160+85)
+        BfsPage.relatedNodeElementsMapping["E"]["Label"] = BfsPage.rootCanvas.create_text(220+35,160+85+35,text="E") # Add 35 to fix the position
 
-        self.relatedNodeElementsMapping["F"]["Oval"] = BfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+        BfsPage.relatedNodeElementsMapping["F"]["Oval"] = BfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
             fill="white", width=2)
-        BfsPage.rootCanvas.move(self.relatedNodeElementsMapping["F"]["Oval"], 300,160+85)
-        self.relatedNodeElementsMapping["F"]["Label"] = BfsPage.rootCanvas.create_text(300+35,160+85+35,text="F") # Add 35 to fix the position
+        BfsPage.rootCanvas.move(BfsPage.relatedNodeElementsMapping["F"]["Oval"], 300,160+85)
+        BfsPage.relatedNodeElementsMapping["F"]["Label"] = BfsPage.rootCanvas.create_text(300+35,160+85+35,text="F") # Add 35 to fix the position
 
         # ─────────────────────────────────────────────────────────────────
 
