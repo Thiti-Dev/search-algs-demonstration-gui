@@ -103,6 +103,29 @@ class Dijkstra:
                 break
         return parents, visited
 
+    def find_route_custom(self, start, end):
+        unvisited = {n: float("inf") for n in self.vertices}
+        unvisited[start] = 0  # set start vertex to 0
+        visited = {}  # list of all visited nodes
+        parents = {}  # predecessors
+        considering_list = [] # for visualization
+        while unvisited:
+            min_vertex = min(unvisited, key=unvisited.get)  # get smallest distance
+            for neighbour, _ in self.graph.get(min_vertex, {}).items():
+                if neighbour in visited:
+                    continue
+                #print(f'currently considering: {min_vertex} -> {neighbour}')
+                considering_list.append((min_vertex,neighbour))
+                new_distance = unvisited[min_vertex] + self.graph[min_vertex].get(neighbour, float("inf"))
+                if new_distance < unvisited[neighbour]:
+                    unvisited[neighbour] = new_distance
+                    parents[neighbour] = min_vertex
+            visited[min_vertex] = unvisited[min_vertex]
+            unvisited.pop(min_vertex)
+            if min_vertex == end:
+                break
+        return considering_list
+
     @staticmethod
     def generate_path(parents, start, end):
         path = [end]
