@@ -3,6 +3,7 @@ from tkinter import *
 import threading
 import config as config
 from PIL import Image, ImageTk
+import algorithm as algos
 
 # ─── CALLBACK FUNCS ─────────────────────────────────────────────────────────────
 class Stimulator:
@@ -423,9 +424,19 @@ class KruskalPage(tk.Frame):
 
         greeting = tk.Label(self,text="Stimulation Panel")
         greeting.place(x=420,y=20)
-        
-        #greeting = tk.Label(self,text="Kruskal’s Minimum Spanning Tree Algorithm")
-        #greeting.pack()
+
+
+        sim_start_btn = tk.Button(self,command=lambda: Stimulator.start("KRUSKAL"), text="Start",bg="orange",fg="white",activebackground="gray",font=('times', 8, ' bold '))
+        sim_start_btn.place(x=300+15,y=80,anchor="center",width=60)
+
+        sim_start_label = tk.Label(self,text="To start the search algorithm")
+        sim_start_label.place(x=350,y=70)
+
+        code_peek_btn = tk.Button(self,command=lambda: codeViewing("KRUSKAL"), text="Code",bg="orange2",fg="white",activebackground="gray",font=('times', 8, ' bold '))
+        code_peek_btn.place(x=300+15,y=120,anchor="center",width=60)
+
+        code_peek_btn_label = tk.Label(self,text="To see how this algorithm written in python")
+        code_peek_btn_label.place(x=350,y=110)
 
         #Logic will be belonging here
 
@@ -559,6 +570,17 @@ def codeViewing(algs_name):
         code_window.configure(background='snow')
 
         load = Image.open("bfs_code.PNG")
+        code_window.geometry(f'{load.size[0]}x{load.size[1]}')
+        render = ImageTk.PhotoImage(load,master=code_window)
+        img = Label(code_window, image=render)
+        img.image = render
+        img.place(x=0, y=0)
+    elif algs_name == "KRUSKAL":
+        code_window.title("Kruskal MST in python")
+        #code_window.geometry('533x411')
+        code_window.configure(background='snow')
+
+        load = Image.open("kruskal_code.PNG")
         code_window.geometry(f'{load.size[0]}x{load.size[1]}')
         render = ImageTk.PhotoImage(load,master=code_window)
         img = Label(code_window, image=render)
