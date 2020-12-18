@@ -920,20 +920,10 @@ def codeViewing(algs_name):
     code_window.mainloop()
 # ────────────────────────────────────────────────────────────────────────────────
 
-#Interval checker&logic driven
-def tick():
-    global tickTimer
-    tickTimer = threading.Timer(1.0, tick)
-    tickTimer.start()
-    print("Current viewing frame page :  %s" % (FrameController.currentPage))
-# ────────────────────────────────────────────────────────────────────────────────
-
 
 global app
 app = FrameController()
 app.title("Search Algorithm Demonstration GUI-APPLICATION")
-tick()
 app.mainloop()
 
-tickTimer.cancel()#defer
-Stimulator.tick_timer.cancel()#defer
+if Stimulator.tick_timer is not None : Stimulator.tick_timer.cancel()#defer
