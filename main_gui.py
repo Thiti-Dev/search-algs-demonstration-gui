@@ -4,6 +4,7 @@ import threading
 import config as config
 from PIL import Image, ImageTk
 import algorithm as algos
+from operator import itemgetter
 
 # ─── CALLBACK FUNCS ─────────────────────────────────────────────────────────────
 class Stimulator:
@@ -24,6 +25,15 @@ class Stimulator:
     bfs_operation_list_info = []
     bfs_current_operator_cnt = 0
     bfs_orderize_string = ""   
+    # ────────────────────────────────────────────────────────────────────────────────
+
+
+    #KRUSKAL#
+    kruskal_operation_list = []
+    kruskal_operation_list_info = []
+    kruskal_current_operator_cnt = 0
+    kruskal_orderize_string = ""
+    kruskal_mst_value = 0
     # ────────────────────────────────────────────────────────────────────────────────
 
 
@@ -95,6 +105,26 @@ class Stimulator:
 
 
 
+        elif name == "KRUSKAL":
+            print("KRUSKAL STARTING")
+            Stimulator.tick_timer = threading.Timer(Stimulator.tick_interval, Stimulator.tick_invoke)
+            isStimulatorTickBeenSettle = True
+
+            #KRUSKAL LOGICS ARE BELOW HERE
+
+            g = algos.Kruskal(5)
+            g.add_edge(0, 1, 10)
+            g.add_edge(0, 2, 6)
+            g.add_edge(0, 3, 5)
+            g.add_edge(1, 3, 15)
+            g.add_edge(2, 3, 4)
+            g.add_edge(3, 4, 7)
+            g.kruskal_algo()
+
+            Stimulator.kruskal_operation_list,Stimulator.kruskal_mst_value = g.kruskal_algo_custom()
+
+            # ─────────────────────────────────────────────────────────────────
+
 
         #just to ensure that the tick was set -> before starting it
         if isStimulatorTickBeenSettle:
@@ -107,6 +137,27 @@ class Stimulator:
             Stimulator.dfs_tick()
         elif Stimulator.currentStimulation == "BFS":
             Stimulator.bfs_tick()
+        elif Stimulator.currentStimulation == "KRUSKAL":
+            Stimulator.kruskal_tick()
+
+    @staticmethod
+    def kruskal_tick():
+        print("Kruskal tick runs here")
+        print(Stimulator.kruskal_operation_list)
+
+        if len(Stimulator.kruskal_operation_list) > Stimulator.kruskal_current_operator_cnt:
+            fromNode, toNode, weight = itemgetter('from', 'to','weight')(Stimulator.kruskal_operation_list[Stimulator.kruskal_current_operator_cnt])
+            print(f'From {fromNode} to {toNode}')
+            Stimulator.kruskal_orderize_string = Stimulator.kruskal_orderize_string + f'FROM {fromNode} -> {toNode} : WEIGHT({weight})\n'
+            kruskal_result_label.config(text=Stimulator.kruskal_orderize_string)
+            KruskalPage.rootCanvas.itemconfig(KruskalPage.relatedNodeElementsMapping[str(fromNode)]["Next"][str(toNode)]["Line"], fill='red')
+            Stimulator.kruskal_current_operator_cnt=Stimulator.kruskal_current_operator_cnt+1
+        else:
+             print("Finish stimulation operation")
+             Stimulator.kruskal_orderize_string = Stimulator.kruskal_orderize_string + '\nTotal weight of MST: ' + str(Stimulator.kruskal_mst_value)
+             kruskal_result_label.config(text=Stimulator.kruskal_orderize_string)
+             Stimulator.tick_timer.cancel()
+
     @staticmethod
     def dfs_tick():
         print("Tick runs here")
@@ -421,6 +472,14 @@ class KruskalPage(tk.Frame):
         
         exit_btn = tk.Button(self,command=lambda: controller.show_frame(MenuPage), text="Home",bg="gray",fg="blue2",activebackground="red",font=('times', 15, ' bold '))
         exit_btn.place(x=600,y=450,anchor="center")
+
+        result_label_info = tk.Label(self,text="Spanning operations in order:")
+        result_label_info.place(x=280,y=220)
+
+        global kruskal_result_label
+        kruskal_result_label = tk.Label(self,text="")
+        kruskal_result_label.place(x=380,y=320,anchor="center")
+
 
         greeting = tk.Label(self,text="Stimulation Panel")
         greeting.place(x=420,y=20)
