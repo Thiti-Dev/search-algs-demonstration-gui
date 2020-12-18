@@ -416,6 +416,13 @@ class KruskalPage(tk.Frame):
     }
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
+
+        
+        exit_btn = tk.Button(self,command=lambda: controller.show_frame(MenuPage), text="Home",bg="gray",fg="blue2",activebackground="red",font=('times', 15, ' bold '))
+        exit_btn.place(x=600,y=450,anchor="center")
+
+        greeting = tk.Label(self,text="Stimulation Panel")
+        greeting.place(x=420,y=20)
         
         #greeting = tk.Label(self,text="Kruskal’s Minimum Spanning Tree Algorithm")
         #greeting.pack()
