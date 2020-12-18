@@ -36,6 +36,13 @@ class Stimulator:
     kruskal_mst_value = 0
     # ────────────────────────────────────────────────────────────────────────────────
 
+    #DIJKSTRA#
+    dijkstra_operation_list = []
+    dijkstra_operation_list_info = []
+    dijkstra_current_operator_cnt = 0
+    dijkstra_orderize_string = ""
+    # ────────────────────────────────────────────────────────────────────────────────
+
 
     @staticmethod
     def start(name):
@@ -126,6 +133,10 @@ class Stimulator:
             # ─────────────────────────────────────────────────────────────────
 
 
+        elif name == "DIJKSTRA":
+            print("DIJKSTRA STARTING")
+            Stimulator.tick_timer = threading.Timer(Stimulator.tick_interval, Stimulator.tick_invoke)
+            isStimulatorTickBeenSettle = True
         #just to ensure that the tick was set -> before starting it
         if isStimulatorTickBeenSettle:
             Stimulator.tick_timer.start() # start any tick thread created from above
@@ -139,6 +150,12 @@ class Stimulator:
             Stimulator.bfs_tick()
         elif Stimulator.currentStimulation == "KRUSKAL":
             Stimulator.kruskal_tick()
+        elif Stimulator.currentStimulation == "DIJKSTRA":
+            Stimulator.dijkstra_tick()
+
+    @staticmethod
+    def dijkstra_tick():
+        print("Dijkstra tick runs here")
 
     @staticmethod
     def kruskal_tick():
@@ -425,14 +442,122 @@ class DfsPage(tk.Frame):
         self.panel.mainloop()
 
 class DijkstraPage(tk.Frame):
+    rootCanvas = None
     pagePointer = "Dijkstra"
+    relatedNodeElementsMapping =  {
+        "A": {
+            "Next": {
+                "B": {},
+                "C": {},
+                "D": {}
+            }
+        },
+        "B": {
+            "Next":{
+                "D":{}
+            }
+        },
+        "C": {
+            "Next":{
+                "E":{},
+                "B":{},
+                "D":{}
+            }
+        },
+        "D": {
+            "Next":{
+                "F":{}
+            }
+        },
+        "E": {
+            "Next":{
+                "D":{}
+            }
+        }
+    }    
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
-        
-        greeting = tk.Label(self,text="Dijkstra search visualization page goes here")
-        greeting.pack()
+
+        exit_btn = tk.Button(self,command=lambda: controller.show_frame(MenuPage), text="Home",bg="gray",fg="blue2",activebackground="red",font=('times', 15, ' bold '))
+        exit_btn.place(x=600,y=450,anchor="center")       
+
+        greeting = tk.Label(self,text="Stimulation Panel")
+        greeting.place(x=400,y=20)
+
+
+        sim_start_btn = tk.Button(self,command=lambda: Stimulator.start("DIJKSTRA"), text="Start",bg="orange",fg="white",activebackground="gray",font=('times', 8, ' bold '))
+        sim_start_btn.place(x=300+15,y=80,anchor="center",width=60)
+
+        sim_start_label = tk.Label(self,text="To start the search algorithm")
+        sim_start_label.place(x=350,y=70)
+
+        code_peek_btn = tk.Button(self,command=lambda: codeViewing("DIJKSTRA"), text="Code",bg="orange2",fg="white",activebackground="gray",font=('times', 8, ' bold '))
+        code_peek_btn.place(x=300+15,y=120,anchor="center",width=60)
+
+        code_peek_btn_label = tk.Label(self,text="To see how this algorithm written in python")
+        code_peek_btn_label.place(x=350,y=110)
+
 
         #Logic will be belonging here
+
+        DijkstraPage.rootCanvas = Canvas(self,width=400,height=480,bg="gray")    
+        DijkstraPage.rootCanvas.place(x=-150,y=0)
+
+        weight_label_a_b = Label(DijkstraPage.rootCanvas,text = "10",fg="blue",bg="yellow")
+        weight_label_a_b.place(x = 210,y = 150)
+
+
+        weight_label_a_c = Label(DijkstraPage.rootCanvas,text = "3",fg="blue",bg="yellow")
+        weight_label_a_c.place(x = 280,y = 150)
+
+        weight_label_b_d = Label(DijkstraPage.rootCanvas,text = "2",fg="blue",bg="yellow")
+        weight_label_b_d.place(x = 215,y = 250)
+
+        weight_label_c_b = Label(DijkstraPage.rootCanvas,text = "4",fg="blue",bg="yellow")
+        weight_label_c_b.place(x = 252,y = 190)
+
+        weight_label_c_d = Label(DijkstraPage.rootCanvas,text = "8",fg="blue",bg="yellow")
+        weight_label_c_d.place(x = 255,y = 230)
+
+        weight_label_c_e = Label(DijkstraPage.rootCanvas,text = "2",fg="blue",bg="yellow")
+        weight_label_c_e.place(x = 320,y = 230)
+
+        weight_label_ed_de = Label(DijkstraPage.rootCanvas,text = "7",fg="blue",bg="yellow")
+        weight_label_ed_de.place(x = 290,y = 285)
+
+
+        DijkstraPage.relatedNodeElementsMapping["A"]["Oval"] = DijkstraPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        DijkstraPage.rootCanvas.move(DijkstraPage.relatedNodeElementsMapping["A"]["Oval"], 220,100)
+        DijkstraPage.relatedNodeElementsMapping["A"]["Label"] = DijkstraPage.rootCanvas.create_text(220+35,100+35,text="A") # Add 35 to fix the position
+        DijkstraPage.relatedNodeElementsMapping["A"]["Next"]["B"]["Line"] = DijkstraPage.rootCanvas.create_line(220+25, 100+55, 225, 200, arrow=tk.LAST)
+        DijkstraPage.relatedNodeElementsMapping["A"]["Next"]["C"]["Line"] = DijkstraPage.rootCanvas.create_line(230+25, 100+55, 290, 200, arrow=tk.LAST)
+
+        DijkstraPage.relatedNodeElementsMapping["B"]["Oval"] = DijkstraPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        DijkstraPage.rootCanvas.move(DijkstraPage.relatedNodeElementsMapping["B"]["Oval"], 180,100+85)
+        DijkstraPage.relatedNodeElementsMapping["B"]["Label"] = DijkstraPage.rootCanvas.create_text(180+35,100+85+35,text="B") # Add 35 to fix the position
+        DijkstraPage.relatedNodeElementsMapping["B"]["Next"]["D"]["Line"] = DijkstraPage.rootCanvas.create_line(190+25, 180+55, 250 , 270, arrow=tk.LAST)
+
+        DijkstraPage.relatedNodeElementsMapping["C"]["Oval"] = DijkstraPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        DijkstraPage.rootCanvas.move(DijkstraPage.relatedNodeElementsMapping["C"]["Oval"], 260,100+85)
+        DijkstraPage.relatedNodeElementsMapping["C"]["Label"] = DijkstraPage.rootCanvas.create_text(260+35,100+85+35,text="C") # Add 35 to fix the position
+        DijkstraPage.relatedNodeElementsMapping["C"]["Next"]["B"]["Line"] = DijkstraPage.rootCanvas.create_line(260+20, 100+120, 180+50 , 100+120,arrow=tk.LAST)
+        DijkstraPage.relatedNodeElementsMapping["C"]["Next"]["D"]["Line"] = DijkstraPage.rootCanvas.create_line(260+25, 180+55, 260 , 265, arrow=tk.LAST)
+        DijkstraPage.relatedNodeElementsMapping["C"]["Next"]["E"]["Line"] = DijkstraPage.rootCanvas.create_line(280+25, 180+55, 330 , 270, arrow=tk.LAST)
+
+        DijkstraPage.relatedNodeElementsMapping["D"]["Oval"] = DijkstraPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        DijkstraPage.rootCanvas.move(DijkstraPage.relatedNodeElementsMapping["D"]["Oval"], 220,160+85)
+        DijkstraPage.relatedNodeElementsMapping["D"]["Label"] = DijkstraPage.rootCanvas.create_text(220+35,160+85+35,text="D") # Add 35 to fix the position
+
+        DijkstraPage.relatedNodeElementsMapping["E"]["Oval"] = DijkstraPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        DijkstraPage.rootCanvas.move(DijkstraPage.relatedNodeElementsMapping["E"]["Oval"], 300,160+85)
+        DijkstraPage.relatedNodeElementsMapping["E"]["Label"] = DijkstraPage.rootCanvas.create_text(300+35,160+85+35,text="E") # Add 35 to fix the position
+        DijkstraPage.relatedNodeElementsMapping["E"]["Next"]["D"]["Line"] = DijkstraPage.rootCanvas.create_line(300+20, 160+120, 220+50 , 160+120)
+
 
         # ─────────────────────────────────────────────────────────────────
 
@@ -645,6 +770,17 @@ def codeViewing(algs_name):
         img = Label(code_window, image=render)
         img.image = render
         img.place(x=0, y=0)
+    elif algs_name == "DIJKSTRA":
+        code_window.title("Dijkstra's algorithm in python")
+        #code_window.geometry('533x411')
+        code_window.configure(background='snow')
+
+        load = Image.open("dijkstra_code.PNG")
+        code_window.geometry(f'{load.size[0]}x{load.size[1]}')
+        render = ImageTk.PhotoImage(load,master=code_window)
+        img = Label(code_window, image=render)
+        img.image = render
+        img.place(x=0, y=0)        
     code_window.mainloop()
 # ────────────────────────────────────────────────────────────────────────────────
 
