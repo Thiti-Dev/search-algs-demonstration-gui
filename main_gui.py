@@ -47,10 +47,45 @@ class Stimulator:
 
 
     @staticmethod
+    def resetStaticValuesToInitial():
+        #DFS#
+        Stimulator.operation_list = [] # a list contains set of lambda
+        Stimulator.operation_list_info = []
+        Stimulator.current_operator_cnt = 0 # use for fixing the bugged if the array is popped while doing the iteration
+        Stimulator.orderize_string = ""
+        # ────────────────────────────────────────────────────────────────────────────────
+
+        #BFS#
+        Stimulator.bfs_operation_list = []
+        Stimulator.bfs_operation_list_info = []
+        Stimulator.bfs_current_operator_cnt = 0
+        Stimulator.bfs_orderize_string = ""   
+        # ────────────────────────────────────────────────────────────────────────────────
+
+
+        #KRUSKAL#
+        Stimulator.kruskal_operation_list = []
+        Stimulator.kruskal_operation_list_info = []
+        Stimulator.kruskal_current_operator_cnt = 0
+        Stimulator.kruskal_orderize_string = ""
+        Stimulator.kruskal_mst_value = 0
+        # ────────────────────────────────────────────────────────────────────────────────
+
+        #DIJKSTRA#
+        Stimulator.dijkstra_operation_list = []
+        Stimulator.dijkstra_operation_list_info = []
+        Stimulator.dijkstra_current_operator_cnt = 0
+        Stimulator.dijkstra_orderize_string = ""
+        Stimulator.dijkstra_orderized_path = []
+        Stimulator.dijstra_total_distance = 0.0
+        # ────────────────────────────────────────────────────────────────────────────────        
+
+    @staticmethod
     def start(name):
 
         if Stimulator.tick_timer is not None: return # return if tick_timer is in progress
 
+        Stimulator.resetStaticValuesToInitial() # reset -> made available for clicking the start again
         print("Starting stimulator with type of %s" % (name))
         Stimulator.currentStimulation = name
         isStimulatorTickBeenSettle = False
