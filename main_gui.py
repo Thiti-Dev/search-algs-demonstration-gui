@@ -253,8 +253,18 @@ class Stimulator:
 
     @staticmethod
     def kruskal_tick():
+
+
+        def reverseNodeBgToDefault():
+            for node in KruskalPage.relatedNodeElementsMapping:
+                if "Next" in KruskalPage.relatedNodeElementsMapping[node]:
+                    for nextNode in KruskalPage.relatedNodeElementsMapping[node]["Next"]:
+                        if "Line" in KruskalPage.relatedNodeElementsMapping[node]["Next"][nextNode]:
+                            KruskalPage.rootCanvas.itemconfig(KruskalPage.relatedNodeElementsMapping[node]["Next"][nextNode]['Line'], fill='black')
+
         print("Kruskal tick runs here")
         print(Stimulator.kruskal_operation_list)
+        if Stimulator.kruskal_current_operator_cnt == 0: reverseNodeBgToDefault() # reverse = clean the line color
 
         if len(Stimulator.kruskal_operation_list) > Stimulator.kruskal_current_operator_cnt:
             fromNode, toNode, weight = itemgetter('from', 'to','weight')(Stimulator.kruskal_operation_list[Stimulator.kruskal_current_operator_cnt])
@@ -273,6 +283,14 @@ class Stimulator:
     @staticmethod
     def dfs_tick():
         print("Tick runs here")
+
+        def reverseNodeBgToDefault():
+            for node in DfsPage.relatedNodeElementsMapping:
+                if "Next" in DfsPage.relatedNodeElementsMapping[node]:
+                    for nextNode in DfsPage.relatedNodeElementsMapping[node]["Next"]:
+                        if "Line" in DfsPage.relatedNodeElementsMapping[node]["Next"][nextNode]:
+                            DfsPage.rootCanvas.itemconfig(DfsPage.relatedNodeElementsMapping[node]["Next"][nextNode]['Line'], fill='black')
+        if Stimulator.current_operator_cnt == 0: reverseNodeBgToDefault() # reverse = clean the line color
 
         # This methods is bugged
         # if len(Stimulator.operation_list): #if there is the process remain
@@ -302,6 +320,16 @@ class Stimulator:
     @staticmethod
     def bfs_tick():
         print("BFS TICK'S RUNNING")
+
+        def reverseNodeBgToDefault():
+            for node in BfsPage.relatedNodeElementsMapping:
+                if "Next" in BfsPage.relatedNodeElementsMapping[node]:
+                    for nextNode in BfsPage.relatedNodeElementsMapping[node]["Next"]:
+                        if "Line" in BfsPage.relatedNodeElementsMapping[node]["Next"][nextNode]:
+                            BfsPage.rootCanvas.itemconfig(BfsPage.relatedNodeElementsMapping[node]["Next"][nextNode]['Line'], fill='black')
+
+        if Stimulator.bfs_current_operator_cnt == 0: reverseNodeBgToDefault() # reverse = clean the line color
+
         if len(Stimulator.bfs_operation_list_info) > Stimulator.bfs_current_operator_cnt:
             fromNode,toNode = Stimulator.bfs_operation_list_info[Stimulator.bfs_current_operator_cnt]
             BfsPage.rootCanvas.itemconfig(BfsPage.relatedNodeElementsMapping[fromNode]["Next"][toNode]["Line"], fill='red')
@@ -325,6 +353,9 @@ class MenuPage(tk.Frame):
         #Passing self as root_window
         message = tk.Label(self, text="Search algorithms gui demonstration", bg="blue2", fg="snow",font=('times', 20, ' bold '))
         message.place(x=getCenteredAxis()["x"], y=30,anchor="center")
+
+        credit = tk.Label(self, text="Created by Thiti Mahawannakit 60090500410 and uses for CSS121", bg="gray", fg="black",font=('times', 8, ' bold '))
+        credit.place(x=185, y=455,anchor="center")
 
         dijkstra_btn = tk.Button(self,command=lambda: controller.show_frame(DijkstraPage), text="Dijkstra search algorithm",bg="orange",fg="white",activebackground="gray",font=('times', 15, ' bold '))
         dijkstra_btn.place(x=getCenteredAxis()["x"],y=150,anchor="center",width=300)
