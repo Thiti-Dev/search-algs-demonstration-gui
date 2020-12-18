@@ -41,6 +41,8 @@ class Stimulator:
     dijkstra_operation_list_info = []
     dijkstra_current_operator_cnt = 0
     dijkstra_orderize_string = ""
+    dijkstra_orderized_path = []
+    dijstra_total_distance = 0.0
     # ────────────────────────────────────────────────────────────────────────────────
 
 
@@ -137,6 +139,31 @@ class Stimulator:
             print("DIJKSTRA STARTING")
             Stimulator.tick_timer = threading.Timer(Stimulator.tick_interval, Stimulator.tick_invoke)
             isStimulatorTickBeenSettle = True
+
+
+
+            #DIJKSTRA LOGICS ARE BELOW HERE
+            input_vertices = ("A", "B", "C", "D", "E")
+            input_graph = {
+                "A": {"B": 10, "C": 3},
+                "B": {"D": 2},
+                "C": {"B": 4, "D": 8, "E": 2},
+                "D": {"E": 7},
+                "E": {"D": 7}
+            }
+            start_vertex = "A"
+            end_vertex= "B"
+            dijkstra = algos.Dijkstra(input_vertices, input_graph)
+            p, v = dijkstra.find_route(start_vertex, end_vertex)
+            Stimulator.dijkstra_operation_list = dijkstra.find_route_custom(start_vertex, end_vertex)
+            Stimulator.dijstra_total_distance = v[end_vertex]
+            print("Distance from %s to %s is: %.2f" % (start_vertex, end_vertex, v[end_vertex]))
+            Stimulator.dijkstra_orderized_path = dijkstra.generate_path(p, start_vertex, end_vertex)
+            print("Path from %s to %s is: %s" % (start_vertex, end_vertex, " -> ".join(Stimulator.dijkstra_orderized_path)))
+
+            # ─────────────────────────────────────────────────────────────────
+
+
         #just to ensure that the tick was set -> before starting it
         if isStimulatorTickBeenSettle:
             Stimulator.tick_timer.start() # start any tick thread created from above
@@ -155,7 +182,35 @@ class Stimulator:
 
     @staticmethod
     def dijkstra_tick():
+
+        def reverseNodeBgToDefault():
+            for node in DijkstraPage.relatedNodeElementsMapping:
+                DijkstraPage.rootCanvas.itemconfig(DijkstraPage.relatedNodeElementsMapping[node]["Oval"], fill='white')
+
         print("Dijkstra tick runs here")
+        print(Stimulator.dijkstra_operation_list)
+        reverseNodeBgToDefault() # clean the color
+
+        if len(Stimulator.dijkstra_operation_list) > Stimulator.dijkstra_current_operator_cnt:
+            fromNode, toNode = Stimulator.dijkstra_operation_list[Stimulator.dijkstra_current_operator_cnt]
+            DijkstraPage.rootCanvas.itemconfig(DijkstraPage.relatedNodeElementsMapping[fromNode]["Oval"], fill='blue')
+            DijkstraPage.rootCanvas.itemconfig(DijkstraPage.relatedNodeElementsMapping[toNode]["Oval"], fill='red')
+
+            Stimulator.dijkstra_orderize_string = Stimulator.dijkstra_orderize_string + f'Considering {fromNode} -> {toNode}\n'
+            dijkstra_result_label.config(text=Stimulator.dijkstra_orderize_string)
+
+            Stimulator.dijkstra_current_operator_cnt=Stimulator.dijkstra_current_operator_cnt+1
+        else:
+            print('Finished to operation')
+            print(Stimulator.dijkstra_orderized_path)
+
+            for node in Stimulator.dijkstra_orderized_path:
+                DijkstraPage.rootCanvas.itemconfig(DijkstraPage.relatedNodeElementsMapping[node]["Oval"], fill='green')
+
+            Stimulator.dijkstra_orderize_string = Stimulator.dijkstra_orderize_string + 'Shortest path from A -> B is: ' + "->".join(Stimulator.dijkstra_orderized_path) + '\nWith total distance: ' + str(Stimulator.dijstra_total_distance)
+            dijkstra_result_label.config(text=Stimulator.dijkstra_orderize_string)
+
+            Stimulator.tick_timer.cancel()
 
     @staticmethod
     def kruskal_tick():
@@ -480,6 +535,14 @@ class DijkstraPage(tk.Frame):
 
         exit_btn = tk.Button(self,command=lambda: controller.show_frame(MenuPage), text="Home",bg="gray",fg="blue2",activebackground="red",font=('times', 15, ' bold '))
         exit_btn.place(x=600,y=450,anchor="center")       
+
+
+        result_label_info = tk.Label(self,text="Dijkstra operations in order:")
+        result_label_info.place(x=280,y=220)
+
+        global dijkstra_result_label
+        dijkstra_result_label = tk.Label(self,text="")
+        dijkstra_result_label.place(x=380,y=320,anchor="center")
 
         greeting = tk.Label(self,text="Stimulation Panel")
         greeting.place(x=400,y=20)
