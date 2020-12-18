@@ -18,16 +18,24 @@ class Stimulator:
     orderize_string = ""
     # ────────────────────────────────────────────────────────────────────────────────
 
+    #BFS#
+    bfs_operation_list = []
+    bfs_operation_list_info = []
+    bfs_current_operator_cnt = 0
+    bfs_orderize_string = ""   
+    # ────────────────────────────────────────────────────────────────────────────────
+
+
     @staticmethod
     def start(name):
         print("Starting stimulator with type of %s" % (name))
         Stimulator.currentStimulation = name
-
+        isStimulatorTickBeenSettle = False
         #start the thread time
         if name == "DFS":
             #this only runs once the button has been clicked
             Stimulator.tick_timer = threading.Timer(Stimulator.tick_interval, Stimulator.tick_invoke)
-
+            isStimulatorTickBeenSettle = True
             # All of the DFS logics are below here and all of it will be appening in the operation_list
             def dfs(_visited,graph,node):
                 if node not in _visited:
@@ -45,19 +53,59 @@ class Stimulator:
 
             visited = set()
             dfs(visited,DfsPage.relatedNodeElementsMapping,'A')
-            Stimulator.orderize_string='A -> '
+            Stimulator.orderize_string='A'
             print("Length of operation %d" %(len(Stimulator.operation_list)))
             print(Stimulator.operation_list_info)
             # ─────────────────────────────────────────────────────────────────
 
             
-        Stimulator.tick_timer.start()
+        elif name == "BFS":
+            print("BFS STARTING")
+            Stimulator.tick_timer = threading.Timer(Stimulator.tick_interval, Stimulator.tick_invoke)
+            isStimulatorTickBeenSettle = True
+
+
+
+
+
+            #BFS LOGICS ARE BELOW HERE
+            queue = []     #Initialize a queue
+            def bfs(visited, graph, node):
+                visited.append(node)
+                queue.append(node)
+
+                while queue:
+                    s = queue.pop(0) 
+                    print (s, end = " ") 
+
+                    if "Next" in graph[s]:
+                        for neighbour in graph[s]["Next"]:
+                            if neighbour not in visited:
+                                visited.append(neighbour)
+                                queue.append(neighbour)
+                                Stimulator.bfs_operation_list_info.append((s,neighbour))
+
+            visited = [] # List to keep track of visited nodes.
+            bfs(visited, DfsPage.relatedNodeElementsMapping, 'A')
+            Stimulator.bfs_orderize_string='A'
+            # ─────────────────────────────────────────────────────────────────
+
+
+
+
+
+
+        #just to ensure that the tick was set -> before starting it
+        if isStimulatorTickBeenSettle:
+            Stimulator.tick_timer.start() # start any tick thread created from above
     @staticmethod
     def tick_invoke():
         Stimulator.tick_timer = threading.Timer(Stimulator.tick_interval, Stimulator.tick_invoke)
         Stimulator.tick_timer.start() # made continuoys
         if Stimulator.currentStimulation == "DFS":
             Stimulator.dfs_tick()
+        elif Stimulator.currentStimulation == "BFS":
+            Stimulator.bfs_tick()
     @staticmethod
     def dfs_tick():
         print("Tick runs here")
@@ -80,13 +128,25 @@ class Stimulator:
             DfsPage.rootCanvas.itemconfig(DfsPage.relatedNodeElementsMapping[fromNode]["Next"][toNode]["Line"], fill='red')
             Stimulator.current_operator_cnt=Stimulator.current_operator_cnt+1
 
-            if Stimulator.current_operator_cnt == len(Stimulator.operation_list):
-                Stimulator.orderize_string=Stimulator.orderize_string+toNode
-            else:
-                Stimulator.orderize_string=Stimulator.orderize_string+toNode + ' -> '
+            Stimulator.orderize_string=Stimulator.orderize_string+' -> '+toNode
             result_label.config(text=Stimulator.orderize_string)
         else:
              print("Finish stimulation operation")
+             Stimulator.tick_timer.cancel()
+
+    @staticmethod
+    def bfs_tick():
+        print("BFS TICK'S RUNNING")
+        if len(Stimulator.bfs_operation_list_info) > Stimulator.bfs_current_operator_cnt:
+            fromNode,toNode = Stimulator.bfs_operation_list_info[Stimulator.bfs_current_operator_cnt]
+            BfsPage.rootCanvas.itemconfig(BfsPage.relatedNodeElementsMapping[fromNode]["Next"][toNode]["Line"], fill='red')
+            Stimulator.bfs_current_operator_cnt=Stimulator.bfs_current_operator_cnt+1
+
+            Stimulator.bfs_orderize_string=Stimulator.bfs_orderize_string+' -> '+toNode
+            result_label_bfs.config(text=Stimulator.bfs_orderize_string)
+        else:
+             print("Finish stimulation operation")
+             Stimulator.tick_timer.cancel()
 
 # ────────────────────────────────────────────────────────────────────────────────
 
