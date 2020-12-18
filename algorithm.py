@@ -47,3 +47,31 @@ class Kruskal:
                 self.apply_union(parent, rank, x, y)
         for u, v, weight in result:
             print("%d - %d: %d" % (u, v, weight))
+
+    def kruskal_algo_custom(self):
+        result = []
+        i, e = 0, 0
+        self.graph = sorted(self.graph, key=lambda item: item[2])
+        parent = []
+        rank = []
+        for node in range(self.V):
+            parent.append(node)
+            rank.append(0)
+        while e < self.V - 1:
+            u, v, w = self.graph[i]
+            i = i + 1
+            x = self.find(parent, u)
+            y = self.find(parent, v)
+            if x != y:
+                e = e + 1
+                result.append([u, v, w])
+                self.apply_union(parent, rank, x, y)
+
+        orderized_list = [] # array of dict for further usage
+        total_mst = 0
+        for u, v, weight in result:
+            #print("%d - %d: %d" % (u, v, weight))
+            orderized_list.append({"from":u,"to":v,"weight":weight})
+            total_mst = total_mst+weight
+
+        return orderized_list,total_mst
