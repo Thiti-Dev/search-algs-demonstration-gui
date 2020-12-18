@@ -617,8 +617,8 @@ class DijkstraPage(tk.Frame):
         dijkstra_result_label = tk.Label(self,text="")
         dijkstra_result_label.place(x=380,y=320,anchor="center")
 
-        greeting = tk.Label(self,text="Stimulation Panel")
-        greeting.place(x=400,y=20)
+        greeting = tk.Label(self,text="Stimulation Panel From Node A->B")
+        greeting.place(x=350,y=20)
 
 
         sim_start_btn = tk.Button(self,command=lambda: Stimulator.start("DIJKSTRA"), text="Start",bg="orange",fg="white",activebackground="gray",font=('times', 8, ' bold '))
