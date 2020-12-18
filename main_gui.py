@@ -48,6 +48,9 @@ class Stimulator:
 
     @staticmethod
     def start(name):
+
+        if Stimulator.tick_timer is not None: return # return if tick_timer is in progress
+
         print("Starting stimulator with type of %s" % (name))
         Stimulator.currentStimulation = name
         isStimulatorTickBeenSettle = False
@@ -211,6 +214,7 @@ class Stimulator:
             dijkstra_result_label.config(text=Stimulator.dijkstra_orderize_string)
 
             Stimulator.tick_timer.cancel()
+            Stimulator.tick_timer = None
 
     @staticmethod
     def kruskal_tick():
@@ -229,6 +233,7 @@ class Stimulator:
              Stimulator.kruskal_orderize_string = Stimulator.kruskal_orderize_string + '\nTotal weight of MST: ' + str(Stimulator.kruskal_mst_value)
              kruskal_result_label.config(text=Stimulator.kruskal_orderize_string)
              Stimulator.tick_timer.cancel()
+             Stimulator.tick_timer = None
 
     @staticmethod
     def dfs_tick():
@@ -257,6 +262,7 @@ class Stimulator:
         else:
              print("Finish stimulation operation")
              Stimulator.tick_timer.cancel()
+             Stimulator.tick_timer = None
 
     @staticmethod
     def bfs_tick():
@@ -271,6 +277,7 @@ class Stimulator:
         else:
              print("Finish stimulation operation")
              Stimulator.tick_timer.cancel()
+             Stimulator.tick_timer = None
 
 # ────────────────────────────────────────────────────────────────────────────────
 
