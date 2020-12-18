@@ -169,6 +169,9 @@ class MenuPage(tk.Frame):
         dfs_btn = tk.Button(self,command=lambda: controller.show_frame(DfsPage), text="Depth first search algorithm",bg="orange",fg="white",activebackground="gray",font=('times', 15, ' bold '))
         dfs_btn.place(x=getCenteredAxis()["x"],y=250,anchor="center",width=300)
 
+        dijkstra_btn = tk.Button(self,command=lambda: controller.show_frame(KruskalPage), text="Kruskal’s MST Algorithm",bg="orange",fg="white",activebackground="gray",font=('times', 15, ' bold '))
+        dijkstra_btn.place(x=getCenteredAxis()["x"],y=300,anchor="center",width=300)
+
         exit_btn = tk.Button(self,command=exitProgram, text="Exit",bg="red",fg="white",activebackground="gray",font=('times', 15, ' bold '))
         exit_btn.place(x=600,y=450,anchor="center")
 
@@ -381,6 +384,102 @@ class DijkstraPage(tk.Frame):
 
         # ─────────────────────────────────────────────────────────────────
 
+class KruskalPage(tk.Frame):
+    pagePointer = "Kruskal"
+    rootCanvas = None
+    relatedNodeElementsMapping =  {
+        "0": {
+            "Next": {
+                "1": {},
+                "2": {},
+                "3": {}
+            }
+        },
+        "1": {
+            "Next": {
+                "0": {},
+                "3": {}
+            }
+        },
+        "2": {
+            "Next":{
+                "0":{},
+                "3":{}
+            }
+        },
+        "3": {
+            "Next":{
+                "4":{}
+            }
+        },
+        "4": {}
+    }
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        
+        #greeting = tk.Label(self,text="Kruskal’s Minimum Spanning Tree Algorithm")
+        #greeting.pack()
+
+        #Logic will be belonging here
+
+        KruskalPage.rootCanvas = Canvas(self,width=400,height=480,bg="gray")
+        KruskalPage.rootCanvas.place(x=-120,y=0)
+
+        weight_label_0_1 = Label(KruskalPage.rootCanvas,text = "10",fg="blue",bg="yellow")
+        weight_label_0_1.place(x = 190,y = 140)
+
+        
+        weight_label_0_3 = Label(KruskalPage.rootCanvas,text = "5",fg="blue",bg="yellow")
+        weight_label_0_3.place(x = 300,y = 140)
+
+        weight_label_0_2 = Label(KruskalPage.rootCanvas,text = "6",fg="blue",bg="yellow")
+        weight_label_0_2.place(x = 240,y = 165)
+
+        weight_label_1_3 = Label(KruskalPage.rootCanvas,text = "15",fg="blue",bg="yellow")
+        weight_label_1_3.place(x = 220,y = 350)
+
+
+        weight_label_2_3 = Label(KruskalPage.rootCanvas,text = "4",fg="blue",bg="yellow")
+        weight_label_2_3.place(x = 285,y = 180)
+
+
+        weight_label_3_4 = Label(KruskalPage.rootCanvas,text = "7",fg="blue",bg="yellow")
+        weight_label_3_4.place(x = 260,y = 230)
+
+        KruskalPage.relatedNodeElementsMapping["0"]["Oval"] = KruskalPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        KruskalPage.rootCanvas.move(KruskalPage.relatedNodeElementsMapping["0"]["Oval"], 220,100)
+        KruskalPage.relatedNodeElementsMapping["0"]["Label"] = KruskalPage.rootCanvas.create_text(220+35,100+35,text="0") # Add 35 to fix the position
+        KruskalPage.relatedNodeElementsMapping["0"]["Next"]["1"]["Line"] = KruskalPage.rootCanvas.create_line(220+25, 100+45, 150+35, 170+20)
+        KruskalPage.relatedNodeElementsMapping["0"]["Next"]["2"]["Line"] = KruskalPage.rootCanvas.create_line(220+35, 100+50, 230+35, 170+20)
+        KruskalPage.relatedNodeElementsMapping["0"]["Next"]["3"]["Line"] = KruskalPage.rootCanvas.create_line(225+35, 100+50, 300+35, 170+20)
+
+        KruskalPage.relatedNodeElementsMapping["1"]["Oval"] = KruskalPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        KruskalPage.rootCanvas.move(KruskalPage.relatedNodeElementsMapping["1"]["Oval"], 150,170)
+        KruskalPage.relatedNodeElementsMapping["1"]["Label"] = KruskalPage.rootCanvas.create_text(150+35,170+35,text="1") # Add 35 to fix the position
+        KruskalPage.relatedNodeElementsMapping["1"]["Next"]["3"]["Line"] = KruskalPage.rootCanvas.create_line(160+25, 175+45, 200+35, 200+20,200,400,350,200,smooth=1)
+
+        
+        KruskalPage.relatedNodeElementsMapping["2"]["Oval"] = KruskalPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        KruskalPage.rootCanvas.move(KruskalPage.relatedNodeElementsMapping["2"]["Oval"], 230,170)
+        KruskalPage.relatedNodeElementsMapping["2"]["Label"] = KruskalPage.rootCanvas.create_text(230+35,170+35,text="2") # Add 35 to fix the position
+        KruskalPage.relatedNodeElementsMapping["2"]["Next"]["3"]["Line"] = KruskalPage.rootCanvas.create_line(245+35, 155+50, 290+35, 185+20)
+
+
+        KruskalPage.relatedNodeElementsMapping["3"]["Oval"] = KruskalPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        KruskalPage.rootCanvas.move(KruskalPage.relatedNodeElementsMapping["3"]["Oval"], 300,170)
+        KruskalPage.relatedNodeElementsMapping["3"]["Label"] = KruskalPage.rootCanvas.create_text(300+35,170+35,text="3") # Add 35 to fix the position
+        KruskalPage.relatedNodeElementsMapping["3"]["Next"]["4"]["Line"] = KruskalPage.rootCanvas.create_line(300+25, 170+45, 230+35, 240+20)
+
+        KruskalPage.relatedNodeElementsMapping["4"]["Oval"] = KruskalPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        KruskalPage.rootCanvas.move(KruskalPage.relatedNodeElementsMapping["4"]["Oval"], 230,240)
+        KruskalPage.relatedNodeElementsMapping["4"]["Label"] = KruskalPage.rootCanvas.create_text(230+35,240+35,text="4") # Add 35 to fix the position          
+        # ─────────────────────────────────────────────────────────────────
+
 # ─── CONTROLLER ─────────────────────────────────────────────────────────────────
 class FrameController(tk.Tk):
     currentPage = NONE
@@ -394,7 +493,7 @@ class FrameController(tk.Tk):
         container.grid_columnconfigure(0,minsize=640, weight=1)
         self.frames = {}
 
-        for F in (MenuPage,BfsPage,DfsPage,DijkstraPage):
+        for F in (MenuPage,BfsPage,DfsPage,DijkstraPage,KruskalPage):
 
             frame = F(container, self)
 
