@@ -114,13 +114,92 @@ class MenuPage(tk.Frame):
 
 class BfsPage(tk.Frame):
     pagePointer = "Bfs"
+    rootCanvas = None
+    relatedNodeElementsMapping =  {
+        "A": {
+            "Next": {
+                "B": {},
+                "C": {},
+                "D": {}
+            }
+        },
+        "B": {},
+        "C": {
+            "Next":{
+                "E":{}
+            }
+        },
+        "D": {
+            "Next":{
+                "F":{}
+            }
+        },
+        "E": {},
+        "F": {}
+    }
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         
-        greeting = tk.Label(self,text="Breadth first search visualization page goes here")
-        greeting.pack()
+        greeting = tk.Label(self,text="Stimulation Panel")
+        greeting.place(x=370,y=20)
+
+        sim_start_btn = tk.Button(self,command=lambda: Stimulator.start("BFS"), text="Start",bg="orange",fg="white",activebackground="gray",font=('times', 8, ' bold '))
+        sim_start_btn.place(x=300,y=80,anchor="center",width=60)
+
+        sim_start_label = tk.Label(self,text="To start the breadth first search algorithm")
+        sim_start_label.place(x=350,y=70)
+
+        code_peek_btn = tk.Button(self,command=lambda: codeViewing("BFS"), text="Code",bg="orange2",fg="white",activebackground="gray",font=('times', 8, ' bold '))
+        code_peek_btn.place(x=300,y=120,anchor="center",width=60)
+
+        code_peek_btn_label = tk.Label(self,text="To see how this algorithm written in python")
+        code_peek_btn_label.place(x=350,y=110)
+
+        result_label_info = tk.Label(self,text="Visited node in order:")
+        result_label_info.place(x=220,y=220)
+
+        global result_label_bfs
+        result_label_bfs = tk.Label(self,text="")
+        result_label_bfs.place(x=220,y=270)
 
         #Logic will be belonging here
+
+        DfsPage.rootCanvas = Canvas(self,width=400,height=480,bg="gray")
+        DfsPage.rootCanvas.place(x=-200,y=0)
+        self.relatedNodeElementsMapping["A"]["Oval"] = DfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        DfsPage.rootCanvas.move(self.relatedNodeElementsMapping["A"]["Oval"], 220,100)
+        self.relatedNodeElementsMapping["A"]["Label"] = DfsPage.rootCanvas.create_text(220+35,100+35,text="A") # Add 35 to fix the position
+        self.relatedNodeElementsMapping["A"]["Next"]["B"]["Line"] = DfsPage.rootCanvas.create_line(220+25, 100+55, 225, 200, arrow=tk.LAST)
+        self.relatedNodeElementsMapping["A"]["Next"]["C"]["Line"] = DfsPage.rootCanvas.create_line(230+25, 100+55, 290, 200, arrow=tk.LAST)
+        self.relatedNodeElementsMapping["A"]["Next"]["D"]["Line"] = DfsPage.rootCanvas.create_line(240+25, 100+55, 290+65, 200, arrow=tk.LAST)
+
+        self.relatedNodeElementsMapping["B"]["Oval"] = DfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        DfsPage.rootCanvas.move(self.relatedNodeElementsMapping["B"]["Oval"], 180,100+85)
+        self.relatedNodeElementsMapping["B"]["Label"] = DfsPage.rootCanvas.create_text(180+35,100+85+35,text="B") # Add 35 to fix the position
+
+        self.relatedNodeElementsMapping["C"]["Oval"] = DfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        DfsPage.rootCanvas.move(self.relatedNodeElementsMapping["C"]["Oval"], 260,100+85)
+        self.relatedNodeElementsMapping["C"]["Label"] = DfsPage.rootCanvas.create_text(260+35,100+85+35,text="C") # Add 35 to fix the position
+        self.relatedNodeElementsMapping["C"]["Next"]["E"]["Line"] = DfsPage.rootCanvas.create_line(260+25, 180+55, 260 , 265, arrow=tk.LAST)
+
+        self.relatedNodeElementsMapping["D"]["Oval"] = DfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        DfsPage.rootCanvas.move(self.relatedNodeElementsMapping["D"]["Oval"], 340,100+85)
+        self.relatedNodeElementsMapping["D"]["Label"] = DfsPage.rootCanvas.create_text(340+35,100+85+35,text="D") # Add 35 to fix the position
+        self.relatedNodeElementsMapping["D"]["Next"]["F"]["Line"] = DfsPage.rootCanvas.create_line(340+25, 180+55, 340 , 265, arrow=tk.LAST)
+
+        self.relatedNodeElementsMapping["E"]["Oval"] = DfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        DfsPage.rootCanvas.move(self.relatedNodeElementsMapping["E"]["Oval"], 220,160+85)
+        self.relatedNodeElementsMapping["E"]["Label"] = DfsPage.rootCanvas.create_text(220+35,160+85+35,text="E") # Add 35 to fix the position
+
+        self.relatedNodeElementsMapping["F"]["Oval"] = DfsPage.rootCanvas.create_oval(20, 20, 50, 50, outline="black",
+            fill="white", width=2)
+        DfsPage.rootCanvas.move(self.relatedNodeElementsMapping["F"]["Oval"], 300,160+85)
+        self.relatedNodeElementsMapping["F"]["Label"] = DfsPage.rootCanvas.create_text(300+35,160+85+35,text="F") # Add 35 to fix the position
 
         # ─────────────────────────────────────────────────────────────────
 
@@ -292,8 +371,8 @@ def exitProgram():
 
 
 def codeViewing(algs_name):
+    code_window = tk.Tk()
     if algs_name == "DFS":
-        code_window = tk.Tk()
         code_window.title("Depth first search in python")
         #code_window.geometry('533x411')
         code_window.configure(background='snow')
@@ -304,8 +383,18 @@ def codeViewing(algs_name):
         img = Label(code_window, image=render)
         img.image = render
         img.place(x=0, y=0)
-        
-        code_window.mainloop()
+    elif algs_name == "BFS":
+        code_window.title("Bredth first search in python")
+        #code_window.geometry('533x411')
+        code_window.configure(background='snow')
+
+        load = Image.open("bfs_code.PNG")
+        code_window.geometry(f'{load.size[0]}x{load.size[1]}')
+        render = ImageTk.PhotoImage(load,master=code_window)
+        img = Label(code_window, image=render)
+        img.image = render
+        img.place(x=0, y=0)
+    code_window.mainloop()
 # ────────────────────────────────────────────────────────────────────────────────
 
 #Interval checker&logic driven
